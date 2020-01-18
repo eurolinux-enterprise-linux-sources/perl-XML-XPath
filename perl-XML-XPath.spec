@@ -1,6 +1,6 @@
 Name:           perl-XML-XPath
 Version:        1.13
-Release:        20%{?dist}
+Release:        22%{?dist}
 
 Summary:        XPath parser and evaluator for Perl
 
@@ -9,7 +9,6 @@ License:        GPL+ or Artistic
 URL:            http://search.cpan.org/dist/XML-XPath/
 Source0:    http://www.cpan.org/authors/id/M/MS/MSERGEANT/XML-XPath-1.13.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-Patch0:         xpath.man.patch
 
 BuildArch:      noarch
 BuildRequires:  perl(Carp)
@@ -29,7 +28,6 @@ this as they support functionality beyond XPath.
 
 %prep
 %setup -q -n XML-XPath-%{version}
-%patch0 -p1
 
 %build
 %{__perl} Makefile.PL INSTALLDIRS=vendor
@@ -42,6 +40,11 @@ make pure_install PERL_INSTALL_ROOT=$RPM_BUILD_ROOT
 find $RPM_BUILD_ROOT -type f -name .packlist -exec rm -f {} ';'
 find $RPM_BUILD_ROOT -type d -depth -exec rmdir {} 2>/dev/null ';'
 chmod -R u+w $RPM_BUILD_ROOT/*
+
+mkdir -p $RPM_BUILD_ROOT/%{_mandir}/man1/
+cat >> $RPM_BUILD_ROOT/%{_mandir}/man1/xpath.1 << EOF
+.so man3/XML::XPath.3pm
+EOF
 
 %check
 make test
@@ -61,6 +64,14 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Feb 21 2014 Marcela Mašláňová <mmaslano@redhat.com> - 1.13-22
+- revert the patch. It breaks backward compatibility for some apps. 
+- the xpath has still man page installed.
+- Resolves: rhbz#1067903
+
+* Fri Dec 27 2013 Daniel Mach <dmach@redhat.com> - 1.13-21
+- Mass rebuild 2013-12-27
+
 * Fri Aug 24 2012 Jitka Plesnikova <jplesnik@redhat.com> - 1.13-20
 - Specify all dependencies. 
 
